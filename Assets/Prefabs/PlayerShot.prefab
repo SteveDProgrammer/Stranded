@@ -160,3 +160,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletSpeed: 12
   dir: {x: 1, y: 0}
+  impactEffect: {fileID: 8842906151315986787, guid: 0119a8abf4bad024387d15b167ce2361, type: 3}

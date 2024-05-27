@@ -9,6 +9,8 @@ public class BulletController : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    public GameObject impactEffect;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,8 @@ public class BulletController : MonoBehaviour
     {
         if(other.gameObject.tag != "Player")
         {
+            if(impactEffect) Instantiate(impactEffect, transform.position, Quaternion.identity);
+            
             Destroy(gameObject);
         }
     }
