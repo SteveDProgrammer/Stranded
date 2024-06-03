@@ -8,7 +8,6 @@ public class BulletController : MonoBehaviour
     public Vector2 dir;
 
     private Rigidbody2D rb;
-
     public GameObject impactEffect;
 
     // Start is called before the first frame update
@@ -25,10 +24,9 @@ public class BulletController : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.tag != "Player")
+        if(other.gameObject.CompareTag("Player"))
         {
             if(impactEffect) Instantiate(impactEffect, transform.position, Quaternion.identity);
-            
             Destroy(gameObject);
         }
     }
