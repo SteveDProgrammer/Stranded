@@ -10,6 +10,8 @@ public class BulletController : MonoBehaviour
     private Rigidbody2D rb;
     public GameObject impactEffect;
 
+    public int damageAmt = 1;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,11 +26,12 @@ public class BulletController : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.CompareTag("Player"))
+        if(other.gameObject.CompareTag("Enemy"))
         {
-            if(impactEffect) Instantiate(impactEffect, transform.position, Quaternion.identity);
-            Destroy(gameObject);
+            other.GetComponent<EnemyHealthController>().DamageEnemy(damageAmt);
         }
+        if(impactEffect) Instantiate(impactEffect, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     private void OnBecameInvisible()
