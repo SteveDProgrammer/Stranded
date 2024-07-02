@@ -12,7 +12,7 @@ public class EnemyHealthController : MonoBehaviour
         totalHealth -= damageAmt;
         if(totalHealth <= 0)
         {
-            if(deathEffect != null) Instantiate(deathEffect, transform.position, Quaternion.identity, null);
+            if(deathEffect != null) Instantiate(deathEffect, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }

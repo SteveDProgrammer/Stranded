@@ -6,13 +6,13 @@ public class CameraController : MonoBehaviour
 {
     private PlayerController playerController;
     public BoxCollider2D boundsBox;
-    private float halfheight, halfWidth;
+    private float screenHalfHeight, screenHalfWidth;
     // Start is called before the first frame update
     void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
-        halfheight = Camera.main.orthographicSize/2;
-        halfWidth = halfheight * Camera.main.aspect;
+        screenHalfHeight = Camera.main.orthographicSize;
+        screenHalfWidth = screenHalfHeight * Camera.main.aspect;
     }
 
     // Update is called once per frame
@@ -21,8 +21,8 @@ public class CameraController : MonoBehaviour
         if(playerController != null)
         {
             transform.position = new Vector3(
-                Mathf.Clamp(playerController.transform.position.x, boundsBox.bounds.min.x + halfWidth, boundsBox.bounds.max.x - halfWidth), 
-                Mathf.Clamp(playerController.transform.position.y, boundsBox.bounds.min.y + halfheight, boundsBox.bounds.max.y - halfheight),
+                Mathf.Clamp(playerController.transform.position.x, boundsBox.bounds.min.x + screenHalfWidth, boundsBox.bounds.max.x - screenHalfWidth), 
+                Mathf.Clamp(playerController.transform.position.y, boundsBox.bounds.min.y + screenHalfHeight, boundsBox.bounds.max.y - screenHalfHeight),
                 -10);
         }
     }

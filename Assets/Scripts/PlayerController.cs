@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -40,75 +41,85 @@ public class PlayerController : MonoBehaviour
 
     private AbilityTracker abilityTracker;
 
+    public bool canMove;
+
     // Start is called before the first frame update
     void Start()
     {
         abilityTracker = GetComponent<AbilityTracker>();
+        canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(currentDashingCooldown > 0)
-        {
-            currentDashingCooldown -= Time.deltaTime;
-        }
-        else
-        {
-            if(Input.GetButtonDown("Fire2") && standingMode.activeSelf && abilityTracker.dashUnlocked)
+        if(canMove)
+        {        
+            if(currentDashingCooldown > 0)
             {
-                timeToNextDash = dashingTimeLimit;
-                SpawnAfterImageFrame();
+                currentDashingCooldown -= Time.deltaTime;
             }
-        }
-
-        if(timeToNextDash > 0)
-        {
-            timeToNextDash -= Time.deltaTime;
-
-            playerRigidbody.velocity = new Vector2(dashingSpeed * transform.localScale.x, playerRigidbody.velocity.y);
-
-            timeToNextAfterImage -= Time.deltaTime;
-            if(timeToNextAfterImage <= 0) SpawnAfterImageFrame();
-
-            currentDashingCooldown = dashingCooldownTime;
-        }
-        else
-        {
-            // What is GetAxis vs GetAxisRaw
-            // GetAxis    = Smoothened
-            // GetAxisRaw = No Smoothing
-            playerRigidbody.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * movementSpeed, playerRigidbody.velocity.y);
-
-            if(playerRigidbody.velocity.x < 0) transform.localScale = new Vector3(-1, 1, 1);
-            else if(playerRigidbody.velocity.x > 0) transform.localScale = new Vector3(1, 1, 1);
-            
-            isOnGround = Physics2D.OverlapCircle(groundCheckPoint.position, 0.2f, groundLayerMask);
-        }
-
-        if(Input.GetButtonDown("Jump") && (isOnGround || (canDoubleJump && abilityTracker.doubleJumpUnlocked)))
-        {
-            if(isOnGround) canDoubleJump = true;
             else
             {
-                canDoubleJump = false;
-                standingAnimator.SetTrigger("doubleJump");
+                if(Input.GetButtonDown("Fire2") && standingMode.activeSelf && abilityTracker.dashUnlocked)
+                {
+                    timeToNextDash = dashingTimeLimit;
+                    SpawnAfterImageFrame();
+                }
             }
-            playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x, jumpingForce);
-        }
 
-        //Shooting
-        if(Input.GetButtonDown("Fire1"))
+            if(timeToNextDash > 0)
+            {
+                timeToNextDash -= Time.deltaTime;
+
+                playerRigidbody.velocity = new Vector2(dashingSpeed * transform.localScale.x, playerRigidbody.velocity.y);
+
+                timeToNextAfterImage -= Time.deltaTime;
+                if(timeToNextAfterImage <= 0) SpawnAfterImageFrame();
+
+                currentDashingCooldown = dashingCooldownTime;
+            }
+            else
+            {
+                // What is GetAxis vs GetAxisRaw
+                // GetAxis    = Smoothened
+                // GetAxisRaw = No Smoothing
+                playerRigidbody.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * movementSpeed, playerRigidbody.velocity.y);
+
+                if(playerRigidbody.velocity.x < 0) transform.localScale = new Vector3(-1, 1, 1);
+                else if(playerRigidbody.velocity.x > 0) transform.localScale = new Vector3(1, 1, 1);
+                
+                isOnGround = Physics2D.OverlapCircle(groundCheckPoint.position, 0.2f, groundLayerMask);
+            }
+
+            if(Input.GetButtonDown("Jump") && (isOnGround || (canDoubleJump && abilityTracker.doubleJumpUnlocked)))
+            {
+                if(isOnGround) canDoubleJump = true;
+                else
+                {
+                    canDoubleJump = false;
+                    standingAnimator.SetTrigger("doubleJump");
+                }
+                playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x, jumpingForce);
+            }
+
+            //Shooting
+            if(Input.GetButtonDown("Fire1"))
+            {
+                if(standingMode.activeSelf)
+                {
+                    Instantiate(bulletController, bulletSpawnPoint.position, bulletSpawnPoint.rotation).dir = new Vector2(transform.localScale.x, 0);
+                    standingAnimator.SetTrigger("shotFired");
+                }
+                else if(ballMode.activeSelf && abilityTracker.bombingUnlocked)
+                {
+                    Instantiate(bombPrefab, bombSpawnPoint.position, bombSpawnPoint.rotation);
+                }
+            }
+        }
+        else
         {
-            if(standingMode.activeSelf)
-            {
-                Instantiate(bulletController, bulletSpawnPoint.position, bulletSpawnPoint.rotation).dir = new Vector2(transform.localScale.x, 0);
-                standingAnimator.SetTrigger("shotFired");
-            }
-            else if(ballMode.activeSelf && abilityTracker.bombingUnlocked)
-            {
-                Instantiate(bombPrefab, bombSpawnPoint.position, bombSpawnPoint.rotation);
-            }
+            playerRigidbody.velocity = Vector2.zero;
         }
 
         bool holdDownKey = Input.GetAxisRaw("Vertical") < -0.9f;
